@@ -20,6 +20,7 @@ class _MyAppState extends State<MyApp> {
   Product mp;
 
   Future<String> data;
+  Future<int> id;
 
   Future<String> getFullName() async{
     SharedPreferences prefs = await SharedPreferences.getInstance();
@@ -27,12 +28,19 @@ class _MyAppState extends State<MyApp> {
     print(dat);
     return dat;
   }
+  Future<int> getID() async{
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    var datId = prefs.get("idPref");
+    print(datId);
+    return datId;
+  }
 
   @override
   void initState() {
     // TODO: implement initState
     super.initState();
     data = getFullName();
+    id = getID();
     print(data);
   }
 
@@ -49,9 +57,11 @@ class _MyAppState extends State<MyApp> {
           primarySwatch: Colors.green,
         ),
         home:  FutureBuilder(
-          future: getFullName(),
+          future: getID(),
           builder: (context, snapshot) {
-            if ( snapshot.hasData) return Categories();
+            if ( snapshot.hasData){
+              return Categories();
+            }
             return LoginPage();
           },
         ) ,
@@ -61,7 +71,7 @@ class _MyAppState extends State<MyApp> {
           '/LoginPage': (context) => LoginPage(),
           '/PaymentPage': (context) => PaymentPage(),
           '/ShoppingPage': (context) =>
-              ShoppingPage(savedCart: savedShoppingitem),
+              ShoppingPage(userId: id, savedCart: savedShoppingitem),
           '/FavouritePage': (context) => FavouritePage(
             savedFavourite: savedFavourite,
           ),

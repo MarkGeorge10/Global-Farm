@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 import '../Product.dart';
 import '../Product_detailed.dart';
@@ -8,15 +9,14 @@ import 'package:http/http.dart' as http;
 
 import 'Cart.dart';
 
+// ignore: must_be_immutable
 class ShoppingPage extends StatefulWidget {
   List<Product> savedCart;
-
-  // Product shoppingpair;
-  List<Widget> divided;
+  Future<int> userId;
 
   double totalPrice;
 
-  ShoppingPage({this.savedCart});
+  ShoppingPage({this.userId, this.savedCart});
 
   @override
   _ShoppingPageState createState() => _ShoppingPageState();
@@ -27,22 +27,6 @@ class _ShoppingPageState extends State<ShoppingPage> {
   List<dynamic> categoryItem;
 
   // ignore: missing_return
-  fetchData() async {
-    setState(() {
-      isLoading = true;
-    });
-    final response = await http
-        .get(
-            'http://global-farm.net/en/api/cart?user_id=3token=hVF4CVDlbuUg18MmRZBA4pDkzuXZi9Rzm5wYvSPtxvF8qa8CK9GiJqMXdAMv')
-        .then((http.Response response) {
-      categoryItem = json.decode(response.body);
-
-      print(categoryItem);
-    });
-    setState(() {
-      isLoading = false;
-    });
-  }
 
   @override
   // ignore: must_call_super
@@ -50,125 +34,213 @@ class _ShoppingPageState extends State<ShoppingPage> {
     fetchData();
   }
 
-  // ignore: missing_return
-  Widget buildFavouriteItem(List<dynamic> savedCart) {
-    if (savedCart.length == 0) {
-      return Center(
-        child: Container(
-          child: new Text(
-            "Your Cart is Empty",
-            style: TextStyle(color: Colors.black, fontSize: 20.0),
-          ),
-        ),
-      );
-    } else {
-      return ListView.separated(
-          separatorBuilder: (context, index) => Divider(
-                color: Colors.black,
-              ),
-          itemCount: savedCart.length,
-          itemBuilder: (context, int index) {
-            return Column(
-              children: <Widget>[
-                Container(
-                  child: ListTile(
-                    onTap: () {
-                      /*  Navigator.push(
-                            context,
-                            new MaterialPageRoute(
-                              builder: (context) => new Product_detailed(
-                                    image: savedShoppingitem[index].picture,
-                                    name: savedShoppingitem[index].name,
-                                    price: savedShoppingitem[index].price,
-                                  ),
-                            ));*/
-                    },
-                    contentPadding: EdgeInsets.symmetric(
-                      horizontal: MediaQuery.of(context).size.width / 10,
-                      vertical: MediaQuery.of(context).size.width / 30,
-                    ),
-                    /*leading: Container(
-                        padding: EdgeInsets.only(
-                          right: MediaQuery.of(context).size.width / 20,
-                        ),
-                        decoration: new BoxDecoration(
-                          border: new Border(
-                              right: new BorderSide(
-                                  width: 1.0, color: Colors.black)),
-                        ),
-                        child: Image.asset(
-                          savedCart[index].picture,
-                          fit: BoxFit.fitHeight,
-                          width: MediaQuery.of(context).size.width / 8,
-                          height: 80.0,
-                        ),
-                      ),*/
-                    title: Center(
-                      child: Text(
-                        savedCart[index]["name"],
-                        style: TextStyle(
-                            color: Colors.black,
-                            fontWeight: FontWeight.bold,
-                            fontSize: MediaQuery.of(context).size.width / 20,
-                            decorationColor: Colors.black),
-                      ),
-                    ),
-                    // subtitle: Text("Intermediate", style: TextStyle(color: Colors.white)),
+  Future<List<dynamic>> fetchData() async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    var datId = prefs.get("idPref");
+    final response = await http
+        .get('http://global-farm.net/en/api/cart?user_id=' +
+            '$datId' +
+            'token=hVF4CVDlbuUg18MmRZBA4pDkzuXZi9Rzm5wYvSPtxvF8qa8CK9GiJqMXdAMv')
+        .then((http.Response response) {
+      categoryItem = json.decode(response.body);
+      print(categoryItem);
 
-                    subtitle: Container(
-                      margin: EdgeInsets.only(
-                          top: MediaQuery.of(context).size.height / 50.0,
-                          left: MediaQuery.of(context).size.width/5.0),
-                      child: Row(
-                        children: <Widget>[
-                          Center(
-                            child: Container(
-                              child: Text("Quantity :",style: TextStyle(color: Colors.black,fontWeight: FontWeight.w600,fontSize: 15.0),),
-                            ),
-                          ),
-                          Center(
-                            child: Container(
-                              child: Text(
-                                "${savedCart[index]["quantity"]}",
-                                style: TextStyle(
-                                  color: Colors.black87,
-                                  fontSize: MediaQuery.of(context).size.width / 25,
-                                ),
-                                textDirection: TextDirection.rtl,
-                              ),
-                            ),
-                          ),
-                        ],
-                      ),
-                    ),
-                    trailing: Container(
-                      margin: EdgeInsets.only(
-                          top: MediaQuery.of(context).size.height / 30.0),
-                      child: Text(
-                        "\$${savedCart[index]["price"]}",
-                        style: TextStyle(
-                          color: Colors.black87,
-                          fontSize: MediaQuery.of(context).size.width / 25,
-                        ),
-                        overflow: TextOverflow.ellipsis,
-                        maxLines: 2,
-                        textDirection: TextDirection.rtl,
-                      ),
+
+    });
+    return categoryItem;
+  }
+
+  deleteData(int userId, int productId) async {
+    final response = await http
+        .get('http://global-farm.net/en/api/cart/delete?user_id=' +
+            '$userId' +
+            '&product_id=' +
+            '$productId' +
+            '&token=hVF4CVDlbuUg18MmRZBA4pDkzuXZi9Rzm5wYvSPtxvF8qa8CK9GiJqMXdAMv')
+        .then((http.Response response) {
+      String responseBody = json.decode(response.body);
+      print(responseBody);
+    });
+  }
+
+  // ignore: missing_return
+  Widget buildFavouriteItem() {
+    return Scaffold(
+      appBar: AppBar(
+        title: new Text(
+          "Your Cart",
+        ),
+        backgroundColor: Colors.green,
+      ),
+      body: FutureBuilder(
+          future: fetchData(),
+          builder: (context, snapshot) {
+            if (snapshot.hasData) {
+             if (snapshot.data.length == 0) {
+              return Material(
+
+                child: Center(
+                  child: Container(
+                    child: new Text(
+                      "Your Cart is Empty",
+                      style: TextStyle(color: Colors.black, fontSize: 20.0),
                     ),
                   ),
                 ),
-              ],
-            );
-          });
-    }
+              );
+            }
+              return Scaffold(
+
+                body: ListView.separated(
+                    separatorBuilder: (context, index) =>
+                        Divider(
+                          color: Colors.black,
+                        ),
+                    itemCount: snapshot.data.length,
+                    itemBuilder: (context, int index) {
+                      return Column(
+                        children: <Widget>[
+                          Container(
+                            child: ListTile(
+                              onTap: () {},
+                              contentPadding: EdgeInsets.symmetric(
+                                horizontal:
+                                MediaQuery
+                                    .of(context)
+                                    .size
+                                    .width / 10,
+                                vertical: MediaQuery
+                                    .of(context)
+                                    .size
+                                    .width / 30,
+                              ),
+                              title: Center(
+                                child: Text(
+                                  snapshot.data[index]["name"],
+                                  style: TextStyle(
+                                      color: Colors.black,
+                                      fontWeight: FontWeight.bold,
+                                      fontSize:
+                                      MediaQuery
+                                          .of(context)
+                                          .size
+                                          .width / 20,
+                                      decorationColor: Colors.black),
+                                ),
+                              ),
+                              // subtitle: Text("Intermediate", style: TextStyle(color: Colors.white)),
+
+                              subtitle: Container(
+                                margin: EdgeInsets.only(
+                                    top:
+                                    MediaQuery
+                                        .of(context)
+                                        .size
+                                        .height / 50.0,
+                                    left:
+                                    MediaQuery
+                                        .of(context)
+                                        .size
+                                        .width / 5.0),
+                                child: Column(
+                                  children: <Widget>[
+                                    Row(
+                                      children: <Widget>[
+                                        Container(
+                                          child: Text(
+                                            "Price :",
+                                            style: TextStyle(
+                                                color: Colors.black,
+                                                fontWeight: FontWeight.w600,
+                                                fontSize: 15.0),
+                                          ),
+                                        ),
+                                        Container(
+                                          child: Text(
+                                            "\$${snapshot.data[index]["price"]}",
+                                            style: TextStyle(
+                                              color: Colors.black87,
+                                              fontSize: MediaQuery
+                                                  .of(context)
+                                                  .size
+                                                  .width /
+                                                  25,
+                                            ),
+                                            textDirection: TextDirection.rtl,
+                                          ),
+                                        ),
+                                      ],
+                                    ),
+                                    Row(
+                                      children: <Widget>[
+                                        Container(
+                                          child: Text(
+                                            "Quantity :",
+                                            style: TextStyle(
+                                                color: Colors.black,
+                                                fontWeight: FontWeight.w600,
+                                                fontSize: 15.0),
+                                          ),
+                                        ),
+                                        Container(
+                                          child: Text(
+                                            "${snapshot.data[index]["quantity"]}",
+                                            style: TextStyle(
+                                              color: Colors.black87,
+                                              fontSize: MediaQuery
+                                                  .of(context)
+                                                  .size
+                                                  .width /
+                                                  25,
+                                            ),
+                                            textDirection: TextDirection.rtl,
+                                          ),
+                                        ),
+                                      ],
+                                    ),
+                                  ],
+                                ),
+                              ),
+                              trailing: IconButton(
+                                  icon: Icon(Icons.delete),
+                                  color: Colors.black,
+                                  onPressed: () async {
+                                    SharedPreferences prefs =
+                                    await SharedPreferences.getInstance();
+                                    int datUser = prefs.get("idPref");
+                                    setState(() {
+                                      deleteData(datUser,
+                                          snapshot.data[index]["product_id"]);
+                                    });
+                                  }),
+                            ),
+                          ),
+                        ],
+                      );
+                    }),
+                bottomNavigationBar: bottomBar(widget.totalPrice = getAmount(snapshot.data)),
+              );
+            }
+
+            // ignore: unrelated_type_equality_checks
+            else if (snapshot.connectionState == false) {
+              return Center(child: Text("Connection Error"));
+            }
+            else if (snapshot.hasError) {
+              return Center(child: Text("There is Something Problem"));
+            }
+            return Center(child: CircularProgressIndicator());
+          }),
+    );
   }
 
   double getAmount(List<dynamic> savedCart) {
     double sum = 0.0;
 
-    for (int i = 0; i < 2; i++) {
+    for (int i = 0; i < savedCart.length; i++) {
       sum += double.parse(savedCart[i]["price"]) * savedCart[i]["quantity"];
     }
+    print(sum);
     return sum;
   }
 
@@ -218,24 +290,6 @@ class _ShoppingPageState extends State<ShoppingPage> {
 
   @override
   Widget build(BuildContext context) {
-    return isLoading
-        ? Scaffold(
-            appBar: AppBar(
-              title: Text('Your Cart'),
-            ),
-            body: Center(child: CircularProgressIndicator()),
-          )
-        : Scaffold(
-            // Add 6 lines from here...
-            appBar: AppBar(
-              title: Text('Your Cart'),
-            ),
-            //body: ListView(children: widget.divided),
-            body: buildFavouriteItem(
-              categoryItem,
-            ),
-            bottomNavigationBar:
-                bottomBar(widget.totalPrice = getAmount(categoryItem)),
-          );
+    return buildFavouriteItem();
   }
 }

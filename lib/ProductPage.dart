@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import 'FavouritePackage/FavouritePage.dart';
 import 'Product.dart';
 import 'Product_detailed.dart';
+import 'ShoppingPackage/Cart.dart';
 import 'ShoppingPackage/ShoppingPage.dart';
 import 'main.dart';
 import 'dart:convert';
@@ -28,48 +30,39 @@ class _productListState extends State<ProductPage>
     with SingleTickerProviderStateMixin {
 
   List<Product> productList;
-  var isLoading = true;
 
 
-  fetchData() async {
-    setState(() {
-      isLoading = true;
-    });
 
+
+  Future <List<Product>> fetchData() async {
     final response =
     await http.get('http://global-farm.net/en/api/products?category='+widget.slug+'&token=hVF4CVDlbuUg18MmRZBA4pDkzuXZi9Rzm5wYvSPtxvF8qa8CK9GiJqMXdAMv   ');
-    // print(json.decode(response.body));
     productItem = json.decode(response.body);
-    // Product.fromJson(json.decode(response.body));
     productList = new List();
-
+    Product prew;
     for (int i=0; i<productItem['data'].length; i++) {
-      Product prew = new Product.fromJson(productItem['data'][i]);
+       prew = new Product.fromJson(productItem['data'][i]);
       productList.add(prew);
-      //print(prew);
     }
-    //print(productList[0].name);
-
-    setState(() {
-      isLoading = false;
-    });
+//    print("ssss");
+//    print(productList[0].productId);
+    return productList;
   }
 
   // ignore: non_constant_identifier_names
 
   AnimationController _animationController;
-  double animationDuration = 0.0;
-  int totalItems = 10;
+  double animationDuration = 1.5;
+
 
   @override
   void initState() {
     super.initState();
-    final int totalDuration = 4000;
+    final int totalDuration = 5;
     _animationController = AnimationController(
-        vsync: this, duration: new Duration(milliseconds: totalDuration));
-    animationDuration = totalDuration / (100 * (totalDuration / totalItems));
+        vsync: this, duration: new Duration(seconds: totalDuration));
+    animationDuration = totalDuration / (4* (totalDuration ));
     _animationController.forward();
-    fetchData();
   }
 
   @override
@@ -91,21 +84,6 @@ class _productListState extends State<ProductPage>
           actions: <Widget>[
             // Add 3 lines from here...
 
-            // push data that saved to Favourite Page
-            IconButton(
-                icon: Icon(Icons.list),
-                onPressed: () {
-                  Navigator.of(context).push(
-                    MaterialPageRoute<void>(
-                      builder: (BuildContext context) {
-                        // ignore: unused_local_variable
-
-                        return FavouritePage(savedFavourite: savedFavourite);
-                      },
-                    ),
-                  );
-                }),
-
             // push data and Calculate total amount Shopping Page
             IconButton(
                 icon: Icon(Icons.shopping_cart),
@@ -122,45 +100,40 @@ class _productListState extends State<ProductPage>
 
           //-------------------------------------------------------------------------------------
         ),
-        body: new Column(
-          //verticalDirection: VerticalDirection.down,
-          children: <Widget>[
-            /*  Hero(
-              tag: widget.img,
-              child: Image.asset(
-                widget.img,
-                fit: BoxFit.fill,
-                height: MediaQuery.of(context).size.height / 4,
-                width: MediaQuery.of(context).size.width,
-              ),
-            ),*/
-            Flexible(
-              child: isLoading
-                  ? Scaffold(
-                body: Center(child: CircularProgressIndicator()),
-              )
-                  : ListView.builder(
-                  itemCount: productItem['data'].length,
+        body:
+      FutureBuilder(
+        future: fetchData(),
+          builder: (context,snapshot){
+
+            if (snapshot.hasData) {
+              return  ListView.builder(
+                  itemCount: snapshot.data.length,
+
                   itemBuilder: (context, int index) {
                     return new Item(
                         index: index,
-                        pair: productList[index],
+                        pair: snapshot.data[index],
                         animationController: _animationController,
                         duration: animationDuration);
-                  }),
-            )
-          ],
-        ));
+                  });
+            }
+            // ignore: unrelated_type_equality_checks
+            else if(snapshot.connectionState == false){return Center(child: Text("Connection Error"));}
+            else if (snapshot.hasError) {
+              return Center(child: Text("There is Something Problem"));
+            }
+
+            // By default, show a loading spinner.
+            return Center(child: CircularProgressIndicator());
+
+      }),);
   }
-
-// ignore: missing_return
-
-// This Method build favourite and shopping icon on the card to give beautiful UI
 
 }
 
 class Item extends StatefulWidget {
   final int index;
+
   final Product pair;
   final AnimationController animationController;
   final double duration;
@@ -175,6 +148,36 @@ class _ItemState extends State<Item> {
   Animation _animation;
   double start;
   double end;
+  int localQuantity = 1;
+
+  Future<Cart> addCart(String url, {Map body}) async {
+    print(body);
+    return http.post(url, body: body).then((http.Response response) {
+
+      final String responseBody = response.body;
+
+      //Product userGet = User.fromJson(json.decode(responseBody));
+      //print(responseBody);
+      print(responseBody);
+
+      /*if (userGet.status) {
+
+        //Navigator.pushNamed(context, '/Categories');
+        Navigator.pushAndRemoveUntil(
+            context,
+            MaterialPageRoute(builder: (context) => Categories()),
+            ModalRoute.withName('/LoginPage'));
+        return userGet;
+        // return null;
+      }
+
+      else{
+       // _showDialog("There is a problem please try again");
+      }*/
+      return null;
+
+    });
+  }
 
   @override
   void initState() {
@@ -273,7 +276,7 @@ class _ItemState extends State<Item> {
 
         Container(
           margin: EdgeInsets.only(
-          left: MediaQuery.of(context).size.width/20.0),
+          left: MediaQuery.of(context).size.width/30.0),
 
           child: Row(
           children: <Widget>[
@@ -284,18 +287,20 @@ class _ItemState extends State<Item> {
                   icon: Icon(Icons.remove_circle_outline),
                   alignment: Alignment.centerLeft,
                   onPressed: () {
-                    /* setState(() {
-                              savedCart[index].quantity--;
-                              if (savedCart[index]["quantity"] < 1) {
-                                savedCart[index].quantity = 1;
-                              }
-                            });*/
+                    setState(() {
+                      localQuantity--;
+                      if (localQuantity < 1) {
+                        localQuantity = 1;
+                      }
+                    });
+
+
                   }),
             ),
             Container(
               margin:EdgeInsets.only(top: MediaQuery.of(context).size.height/30.0) ,
               child: Text(
-                "${1}",
+                "$localQuantity",
               ),
             ),
             Container(
@@ -304,9 +309,10 @@ class _ItemState extends State<Item> {
                   alignment: Alignment.centerRight,
                   icon: Icon(Icons.add_circle_outline),
                   onPressed: () {
-                    /* setState(() {
-                              savedCart[index].quantity++;
-                            });*/
+                    setState(() {
+                      localQuantity++;
+                    });
+
                   }),
             ),
 
@@ -329,7 +335,21 @@ class _ItemState extends State<Item> {
                     : Icons.add_shopping_cart,
                 color: Colors.black
             ),
-            onTap: () {
+            onTap: () async {
+              pair.quantity = localQuantity;
+              SharedPreferences prefs = await SharedPreferences.getInstance();
+              var datId = prefs.get("idPref");
+
+              Cart newCart = new Cart(
+                userId: datId,
+                productId: pair.productId,
+                quantity: localQuantity,
+              );
+
+              Cart cart = await addCart('http://global-farm.net/en/api/cart/items?token=hVF4CVDlbuUg18MmRZBA4pDkzuXZi9Rzm5wYvSPtxvF8qa8CK9GiJqMXdAMv',body: newCart.toAdd());
+
+
+
 // Add 9 lines from here...
               setState(() {
                 if (savedShoppingitem.contains(pair)) {

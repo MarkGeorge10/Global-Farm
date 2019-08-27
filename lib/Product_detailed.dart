@@ -54,7 +54,7 @@ class _Product_detailedState extends State<Product_detailed> {
                         widget.name,
                         style: TextStyle(
                             fontFamily: 'Montserrat',
-                            fontSize: 45.0,
+                            fontSize: 25.0,
                             fontWeight: FontWeight.w600,
                             color: Colors.white),
                       ),
@@ -81,13 +81,13 @@ class _Product_detailedState extends State<Product_detailed> {
                 ),
                 Positioned(
                   top: (MediaQuery.of(context).size.height / 2) - 185.0,
-                  left: (MediaQuery.of(context).size.width / 2) - 80.0,
+                  left: MediaQuery.of(context).size.width / 2.8,
                   child: Hero(
                     tag: widget.image,
                     child: Image(
                       image: NetworkImage(widget.image),
-                      fit: BoxFit.cover,
-                      height: 250.0,
+                      fit: BoxFit.none,
+                      //height: 250.0,
                     ),
                   ),
                 ),

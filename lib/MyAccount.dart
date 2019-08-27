@@ -2,6 +2,7 @@ import 'dart:convert';
 
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
+import 'package:shared_preferences/shared_preferences.dart';
 import 'Registration Form/user.dart';
 
 // ignore: must_be_immutable
@@ -196,7 +197,7 @@ class _MyAccountState extends State<MyAccount> {
           height: MediaQuery.of(context).size.height / 15,
           width: MediaQuery.of(context).size.width,
           decoration: BoxDecoration(
-            color: Colors.lightBlue,
+            color: Colors.green,
             borderRadius: BorderRadius.all(Radius.circular(32)),
           ),
           child: FlatButton(
@@ -233,6 +234,14 @@ class _MyAccountState extends State<MyAccount> {
 
 
       User u = await updateProfile('http://global-farm.net/en/api/account/profile?token=hVF4CVDlbuUg18MmRZBA4pDkzuXZi9Rzm5wYvSPtxvF8qa8CK9GiJqMXdAMv',body: updatedUser.toUpdate());
+
+      SharedPreferences prefs = await SharedPreferences.getInstance();
+      prefs.setInt("idPref",  widget.id);
+      prefs.setString("firstNamePref", u.firstName=="" ? widget.first : u.firstName);
+      prefs.setString("lastNamePref", u.lastName=="" ? widget.last : u.lastName);
+      prefs.setString("emailPref", u.email=="" ? widget.email : u.email);
+
+
       print("238 ${updatedUser.toMap()}");
       formState.reset();
     }

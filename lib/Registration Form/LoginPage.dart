@@ -28,7 +28,7 @@ class _LoginPageState extends State<LoginPage> {
       final String responseBody = response.body;
 
       User userGet = User.fromJson(json.decode(responseBody));
-
+      //print(responseBody);
       print(userGet.status);
 
       if (userGet.status) {
@@ -41,6 +41,7 @@ class _LoginPageState extends State<LoginPage> {
         return userGet;
      // return null;
       }
+
       else{
         _showDialog("There is a problem please try again");
       }
@@ -194,69 +195,7 @@ class _LoginPageState extends State<LoginPage> {
                         ),
                         // -------------------------------------------------------------
 
-                        Container(
-                          child: Text(
-                            "Or Continue With ",
-                            style: TextStyle(color: Colors.grey),
-                          ),
-                          margin: EdgeInsets.only(
-                            bottom: MediaQuery.of(context).size.height / 50,
-                          ),
-                        ),
-                        Row(
-                          mainAxisAlignment: MainAxisAlignment.center,
-                          children: <Widget>[
-                            InkWell(
-                              child: Container(
-                                width: MediaQuery.of(context).size.width / 7,
-                                height: MediaQuery.of(context).size.height / 12,
-                                decoration: BoxDecoration(
-                                    color: Colors.grey[300],
-                                    borderRadius:
-                                        BorderRadius.all(Radius.circular(50))),
-                                child: Center(
-                                  child: Icon(
-                                    IconData(
-                                      0xe901,
-                                      fontFamily: "CustomIcons",
-                                    ),
-                                    color: Colors.blue[700],
-                                  ),
-                                ),
-                              ),
-                            ),
-                            Container(
-                              width: 30,
-                            ),
-                            InkWell(
-                              child: Container(
-                                width: MediaQuery.of(context).size.width / 7,
-                                height: MediaQuery.of(context).size.height / 12,
-                                decoration: BoxDecoration(
-                                    color: Colors.grey[300],
-                                    borderRadius:
-                                        BorderRadius.all(Radius.circular(50))),
-                                child: Center(
-                                  child: Icon(
-                                    IconData(0xe902, fontFamily: "CustomIcons"),
-                                    color: Colors.red[700],
-                                  ),
-                                ),
-                              ),
-                            ),
-                          ],
-                        ),
 
-                        Container(
-                          child: Text(
-                            "Not Registered yet?",
-                            style: TextStyle(color: Colors.grey),
-                          ),
-                          margin: EdgeInsets.only(
-                            top: MediaQuery.of(context).size.height / 50,
-                            bottom: MediaQuery.of(context).size.height / 50,
-                          ),
-                        ),
 
                         //----------------------------Sign Up button---------------------
 
@@ -307,18 +246,20 @@ class _LoginPageState extends State<LoginPage> {
           password: passwordController.text,
       );
       User user = await createPost('http://global-farm.net/en/api/login?token=hVF4CVDlbuUg18MmRZBA4pDkzuXZi9Rzm5wYvSPtxvF8qa8CK9GiJqMXdAMv',body: newUser.toLogin());
+      /*Navigator.pushAndRemoveUntil(
+          context,
+          MaterialPageRoute(builder: (context) => Categories()),
+          ModalRoute.withName('/LoginPage'));*/
       SharedPreferences prefs = await SharedPreferences.getInstance();
-      prefs.setInt("idPref", user.userId);
-      prefs.setString("firstNamePref", user.firstName);
-      prefs.setString("lastNamePref", user.lastName);
-      prefs.setString("emailPref", user.email);
+      prefs.setInt("idPref", /*3*/user.userId);
+      prefs.setString("firstNamePref", /*"omar"*/user.firstName);
+      prefs.setString("lastNamePref", /*"saber"*/user.lastName);
+      prefs.setString("emailPref", /*"admin@vadecom.net"*/user.email);
       print("hii: ${prefs.get("firstNamePref")}");
 //      sharedpref.setString("username", u.firstName);
 
       formState.reset();
     }
-    else{
 
-    }
   }
 }

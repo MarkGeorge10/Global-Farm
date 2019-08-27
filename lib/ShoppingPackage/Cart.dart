@@ -19,12 +19,14 @@ class Cart{
     );
   }
 
-  Map toGet() {
+  Map toAdd() {
     var map = new Map<String, dynamic>();
-    map['name'] = name.toString();
-    map['price'] = price;
-    map['quantity'] = quantity.toDouble();
+    map['user_id'] = userId.toString();
+    map['product_id'] = productId.toString();
+    map['qty'] = quantity.toString();
     return map;
   }
+
+
 
 }
