@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 
-import '../Product.dart';
-import '../Product_detailed.dart';
+import 'package:plant_shop/ProductPackage/Product.dart';
+import 'package:plant_shop/ProductPackage/Product_detailed.dart';
 
 class FavouritePage extends StatefulWidget {
   List<Product> savedFavourite;

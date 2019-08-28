@@ -4,9 +4,9 @@ import 'package:http/http.dart' as http;
 import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
-import 'MyAccount.dart';
-import 'ProductPage.dart';
-import 'Registration Form/LoginPage.dart';
+import 'package:plant_shop/Registration Form/MyAccount.dart';
+import 'package:plant_shop/ProductPackage/ProductPage.dart';
+import '../Registration Form/LoginPage.dart';
 
 int id;
 // ignore: must_be_immutable
@@ -46,14 +46,12 @@ class _CategoriesState extends State<Categories> {
 
   }
 
-  var isLoading = true;
+
    List<dynamic> categoryItem;
 
 
-   fetchData() async {
-     setState(() {
-       isLoading = true;
-     });
+   Future<List<dynamic>>fetchData() async {
+
     final response =
     await http.get('http://global-farm.net/en/api/categories?token=hVF4CVDlbuUg18MmRZBA4pDkzuXZi9Rzm5wYvSPtxvF8qa8CK9GiJqMXdAMv');
    // print(json.decode(response.body));
@@ -61,9 +59,7 @@ class _CategoriesState extends State<Categories> {
 
       print(categoryItem[0]["slug"]);
 
-     setState(() {
-       isLoading = false;
-     });
+    return categoryItem;
   }
   
   logout() async {
@@ -78,7 +74,6 @@ class _CategoriesState extends State<Categories> {
   @override
   void initState() {
     super.initState();
-    fetchData();
     getFullName();
     getID();
     getFirstName();
@@ -86,10 +81,6 @@ class _CategoriesState extends State<Categories> {
     getEmail();
     //categoryItem = fetchPost();
   }
-
-
-
-
   @override
   Widget build(BuildContext context) {
     return  Scaffold(
@@ -100,24 +91,23 @@ class _CategoriesState extends State<Categories> {
       body: buildBody(),
     );
   }
-
   Widget buildBody() {
-    return isLoading
-        ? Scaffold(
-      body: Center(child: CircularProgressIndicator()),
-    )
-        :  GridView.builder(
+    return FutureBuilder(
+      future: fetchData(),
+        builder: (context,snapshot){
+        if(snapshot.hasData){
+          return GridView.builder(
               gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
                   crossAxisCount: 1, childAspectRatio: 2.0),
-              itemCount: categoryItem.length,
+              itemCount: snapshot.data.length,
               itemBuilder: (context, i) {
                 return InkWell(
                   onTap: () {
-                   Navigator.push(
+                    Navigator.push(
                         context,
                         new MaterialPageRoute(
                             builder: (context) => new ProductPage(
-                                categoryItem[i]["name"],categoryItem[i]["slug"])));
+                                snapshot.data[i]["name"],snapshot.data[i]['slug'])));
                   },
                   child: Container(
                     child: Card(
@@ -125,7 +115,20 @@ class _CategoriesState extends State<Categories> {
                       child: Container(
                         child: Container(
                           color: Color.fromRGBO(0, 0, 0, 0.4),
-                          child: buildTitle(categoryItem[i]['name']),
+                          child: Center(
+                            child: Container(
+                              child: Text(
+                                snapshot.data[i]["name"],
+                                style: TextStyle(
+                                    color: Colors.white, fontWeight: FontWeight.bold, fontSize: 20),
+                              ),
+                              padding: EdgeInsets.fromLTRB(10, 5, 10, 5),
+                              margin: EdgeInsets.only(left: 10, right: 10),
+                              decoration: BoxDecoration(
+                                  border: Border.all(
+                                      width: 2, color: Colors.white, style: BorderStyle.solid)),
+                            ),
+                          )
                         ),
                         /*decoration: BoxDecoration(
                       image: DecorationImage(
@@ -137,29 +140,20 @@ class _CategoriesState extends State<Categories> {
                   ),
                 );
               });
+        }
+        else if(snapshot.hasError){
+
+          Center(
+            child: Text("Something happened wrong"),
+          );
+
+        }
+      return Center(child: CircularProgressIndicator());
+    });
 
 
   }
-
-  Widget buildTitle(String title) {
-    return Center(
-      child: Container(
-        child: Text(
-          title,
-          style: TextStyle(
-              color: Colors.white, fontWeight: FontWeight.bold, fontSize: 20),
-        ),
-        padding: EdgeInsets.fromLTRB(10, 5, 10, 5),
-        margin: EdgeInsets.only(left: 10, right: 10),
-        decoration: BoxDecoration(
-            border: Border.all(
-                width: 2, color: Colors.white, style: BorderStyle.solid)),
-      ),
-    );
-  }
-
   Widget buildDrawer() {
-
     return new Drawer(
       child: new ListView(
         children: <Widget>[

@@ -3,11 +3,11 @@ import 'package:flutter/services.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'FavouritePackage/FavouritePage.dart';
 import 'PaymenyPackage/PaymentPage.dart';
-import 'Product.dart';
+import 'package:plant_shop/ProductPackage/Product.dart';
 import 'Registration Form/LoginPage.dart';
 import 'Registration Form/SignUp.dart';
 import 'ShoppingPackage/ShoppingPage.dart';
-import 'categories.dart';
+import 'package:plant_shop/CatergoriesPackage/categories.dart';
 
 void main() => runApp(MyApp());
 

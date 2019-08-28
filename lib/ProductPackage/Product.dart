@@ -7,7 +7,6 @@ class Product {
   String description;
 
   Product({this.picture, this.name, this.price, this.quantity, this.description,this.productId});
-
    Product.fromJson(Map json) :
       picture = json['files'][0]['path'],
       name =  json['name'],

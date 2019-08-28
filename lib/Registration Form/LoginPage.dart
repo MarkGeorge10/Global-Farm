@@ -5,7 +5,7 @@ import 'package:http/http.dart' as http;
 import 'package:plant_shop/Registration%20Form/user.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
-import '../categories.dart';
+import 'package:plant_shop/CatergoriesPackage/categories.dart';
 
 class LoginPage extends StatefulWidget {
   @override

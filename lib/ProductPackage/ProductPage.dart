@@ -1,16 +1,13 @@
 import 'package:flutter/material.dart';
+import 'package:plant_shop/ShoppingPackage/Cart.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-import 'FavouritePackage/FavouritePage.dart';
 import 'Product.dart';
 import 'Product_detailed.dart';
-import 'ShoppingPackage/Cart.dart';
-import 'ShoppingPackage/ShoppingPage.dart';
-import 'main.dart';
+import '../ShoppingPackage/Cart.dart';
+import '../ShoppingPackage/ShoppingPage.dart';
+import '../main.dart';
 import 'dart:convert';
 import 'package:http/http.dart' as http;
-
-Map<String,dynamic> productItem;
-
 
 // ignore: must_be_immutable
 class ProductPage extends StatefulWidget {
@@ -29,10 +26,9 @@ class ProductPage extends StatefulWidget {
 class _productListState extends State<ProductPage>
     with SingleTickerProviderStateMixin {
 
+
+  Map<String,dynamic> productItem;
   List<Product> productList;
-
-
-
 
   Future <List<Product>> fetchData() async {
     final response =
