@@ -1,5 +1,3 @@
-import 'dart:convert';
-
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'package:shared_preferences/shared_preferences.dart';
@@ -24,16 +22,12 @@ class _MyAccountState extends State<MyAccount> {
   TextEditingController _emailTextController = TextEditingController();
   TextEditingController _passwordTextController = TextEditingController();
   TextEditingController _confirmPasswordController = TextEditingController();
-
   @override
   void initState() {
     // TODO: implement initState
     super.initState();
     print(widget.id);
   }
-
-
-
   void _showDialog(String str) {
     // flutter defined function
     showDialog(
@@ -56,17 +50,10 @@ class _MyAccountState extends State<MyAccount> {
       },
     );
   }
-  
-
   Future<User> updateProfile(String url, {Map body}) async {
     return http.post(url, body: body).then((http.Response response) {
       final String responseBody = response.body;
       print("response: $responseBody");
-      //User userGet = User.fromJson(json.decode(responseBody));
-
-
-     // print(userGet.status);
-
       if (responseBody == 'true') {
         _showDialog("Your Data updated successfully");
         return null;
@@ -78,9 +65,6 @@ class _MyAccountState extends State<MyAccount> {
 
     });
   }
-
-
-
   @override
   Widget build(BuildContext context) {
     return new Scaffold(

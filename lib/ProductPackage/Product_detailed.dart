@@ -1,9 +1,10 @@
 import 'package:flutter/material.dart';
 
+// ignore: camel_case_types
 class Product_detailed extends StatefulWidget {
-  final image, name, price;
+  final image, name, price,description;
 
-  Product_detailed({this.image, this.name, this.price});
+  Product_detailed({this.image, this.name, this.price,this.description});
 
   @override
   _Product_detailedState createState() => _Product_detailedState();
@@ -100,38 +101,17 @@ class _Product_detailedState extends State<Product_detailed> {
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: <Widget>[
                         Text(
-                          'All to know...',
+                          'Description : ',
                           style: TextStyle(
                               fontFamily: 'Montserrat',
                               fontSize: 25.0,
                               fontWeight: FontWeight.w600),
                         ),
+
+
                         SizedBox(height: 12.0),
                         Text(
-                          'If you are completely new to houseplants then Ficus is a brilliant first plant to adopt, it is very easy to look after and won\'t occupy too much space.',
-                          style: TextStyle(
-                            fontFamily: 'Montserrat',
-                            fontSize: 14.0,
-                          ),
-                        ),
-                        SizedBox(height: 30.0),
-                        Text(
-                          'Details',
-                          style: TextStyle(
-                              fontFamily: 'Montserrat',
-                              fontSize: 20.0,
-                              fontWeight: FontWeight.w600),
-                        ),
-                        SizedBox(height: 10.0),
-                        Text(
-                          'Plant height: 35-45cm;',
-                          style: TextStyle(
-                            fontFamily: 'Montserrat',
-                            fontSize: 14.0,
-                          ),
-                        ),
-                        Text(
-                          'Nursery pot width: 12cm',
+                          widget.description == null ? 'If you are completely new to houseplants then Ficus is a brilliant first plant to adopt, it is very easy to look after and won\'t occupy too much space.': widget.description,
                           style: TextStyle(
                             fontFamily: 'Montserrat',
                             fontSize: 14.0,

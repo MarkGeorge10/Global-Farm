@@ -190,13 +190,13 @@ class _CategoriesState extends State<Categories> {
               ),
             ),
           ),
-          InkWell(
+         /* InkWell(
             onTap: () {},
             child: ListTile(
               title: Text("My orders"),
               leading: Icon(Icons.shopping_basket, color: Colors.green),
             ),
-          ),
+          ),*/
           InkWell(
             onTap: () {
               Navigator.pushNamed(context, '/ShoppingPage');

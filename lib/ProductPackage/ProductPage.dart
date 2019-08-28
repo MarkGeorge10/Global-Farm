@@ -40,8 +40,6 @@ class _productListState extends State<ProductPage>
        prew = new Product.fromJson(productItem['data'][i]);
       productList.add(prew);
     }
-//    print("ssss");
-//    print(productList[0].productId);
     return productList;
   }
 
@@ -152,25 +150,7 @@ class _ItemState extends State<Item> {
     return http.post(url, body: body).then((http.Response response) {
 
       final String responseBody = response.body;
-
-      //Product userGet = User.fromJson(json.decode(responseBody));
-      //print(responseBody);
       print(responseBody);
-
-      /*if (userGet.status) {
-
-        //Navigator.pushNamed(context, '/Categories');
-        Navigator.pushAndRemoveUntil(
-            context,
-            MaterialPageRoute(builder: (context) => Categories()),
-            ModalRoute.withName('/LoginPage'));
-        return userGet;
-        // return null;
-      }
-
-      else{
-       // _showDialog("There is a problem please try again");
-      }*/
       return null;
 
     });
@@ -214,6 +194,7 @@ class _ItemState extends State<Item> {
                       image: widget.pair.picture,
                       name: widget.pair.name,
                       price: widget.pair.price,
+                        description: widget.pair.description,
                     ),
                   ));
             },
@@ -263,11 +244,8 @@ class _ItemState extends State<Item> {
 
   buildIcon(Product pair) {
     //final model = Provider.of<Model>(context);
-    return Row(
+    return Column(
       children: <Widget>[
-
-
-        //--------------------------------------------------------------------------------------
 
         //----------------------------------Button ADD & Subtract-------------------------------
 
@@ -323,9 +301,31 @@ class _ItemState extends State<Item> {
         Container(
           margin: EdgeInsets.only(
             top: MediaQuery.of(context).size.height / 35,
-            left: MediaQuery.of(context).size.width / 8,
+            left: MediaQuery.of(context).size.width / 35,
           ),
-          child: InkWell(
+          child:
+          FlatButton(
+            color: Colors.green,
+              onPressed: () async {
+                SharedPreferences prefs = await SharedPreferences.getInstance();
+                var datId = prefs.get("idPref");
+
+                Cart newCart = new Cart(
+                  userId: datId,
+                  productId: pair.productId,
+                  quantity: localQuantity,
+                );
+
+                Cart cart = await addCart('http://global-farm.net/en/api/cart/items?token=hVF4CVDlbuUg18MmRZBA4pDkzuXZi9Rzm5wYvSPtxvF8qa8CK9GiJqMXdAMv',body: newCart.toAdd());
+
+              },
+              child: Center(
+                child: Text("Add to cart",style: TextStyle(color: Colors.white),),
+              )
+          )
+
+
+          /* InkWell(
             child: Icon(
                 savedShoppingitem.contains(pair)
                     ? Icons.shopping_cart
@@ -348,16 +348,16 @@ class _ItemState extends State<Item> {
 
 
 // Add 9 lines from here...
-              setState(() {
-                if (savedShoppingitem.contains(pair)) {
-                  savedShoppingitem.remove(pair);
-                } else {
-                  savedShoppingitem.add(pair);
-                  print(savedShoppingitem.length.toString());
-                }
-              });
+//              setState(() {
+//                if (savedShoppingitem.contains(pair)) {
+//                  savedShoppingitem.remove(pair);
+//                } else {
+//                  savedShoppingitem.add(pair);
+//                  print(savedShoppingitem.length.toString());
+//                }
+//              });
             },
-          ),
+          ),*/
         ),
         //-------------------------------------------------------------------------------
       ],
