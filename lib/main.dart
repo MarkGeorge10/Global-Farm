@@ -71,7 +71,7 @@ class _MyAppState extends State<MyApp> {
           '/LoginPage': (context) => LoginPage(),
           '/PaymentPage': (context) => PaymentPage(),
           '/ShoppingPage': (context) =>
-              ShoppingPage(userId: id, savedCart: savedShoppingitem),
+              ShoppingPage(userId: id),
           '/FavouritePage': (context) => FavouritePage(
             savedFavourite: savedFavourite,
           ),

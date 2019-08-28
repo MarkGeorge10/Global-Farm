@@ -91,11 +91,12 @@ class _productListState extends State<ProductPage>
                   Navigator.of(context).push(
                     MaterialPageRoute<void>(
                       builder: (BuildContext context) {
-                        return ShoppingPage(savedCart: savedShoppingitem);
+                        return ShoppingPage();
                       },
                     ),
                   );
-                })
+                }),
+
           ],
 
           //-------------------------------------------------------------------------------------
@@ -336,7 +337,7 @@ class _ItemState extends State<Item> {
                 color: Colors.black
             ),
             onTap: () async {
-              pair.quantity = localQuantity;
+
               SharedPreferences prefs = await SharedPreferences.getInstance();
               var datId = prefs.get("idPref");
 

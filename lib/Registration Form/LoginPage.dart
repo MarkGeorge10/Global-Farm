@@ -23,31 +23,36 @@ class _LoginPageState extends State<LoginPage> {
 
   Future<User> createPost(String url, {Map body}) async {
     print(body);
-    return http.post(url, body: body).then((http.Response response) {
+    try{
+      return http.post(url, body: body).then((http.Response response) {
+          final String responseBody = response.body;
 
-      final String responseBody = response.body;
+          User userGet = User.fromJson(json.decode(responseBody));
+          print(userGet);
+          print(userGet.status);
 
-      User userGet = User.fromJson(json.decode(responseBody));
-      //print(responseBody);
-      print(userGet.status);
+          if (userGet.status) {
+            Navigator.pushAndRemoveUntil(
+                context,
+                MaterialPageRoute(builder: (context) => Categories()),
+                ModalRoute.withName('/LoginPage'));
+            return userGet;
+          }
 
-      if (userGet.status) {
+          else{
+            _showDialog("There is a problem please try again");
+          }
+        return null;
 
-        //Navigator.pushNamed(context, '/Categories');
-        Navigator.pushAndRemoveUntil(
-            context,
-            MaterialPageRoute(builder: (context) => Categories()),
-            ModalRoute.withName('/LoginPage'));
-        return userGet;
-     // return null;
-      }
+      });
 
-      else{
-        _showDialog("There is a problem please try again");
-      }
-      return null;
+    }catch(ex){
 
-    });
+      Center(
+        child: CircularProgressIndicator(),
+      );
+    }
+    return null;
   }
 
 

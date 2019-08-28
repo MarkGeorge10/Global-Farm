@@ -236,10 +236,17 @@ class _MyAccountState extends State<MyAccount> {
       User u = await updateProfile('http://global-farm.net/en/api/account/profile?token=hVF4CVDlbuUg18MmRZBA4pDkzuXZi9Rzm5wYvSPtxvF8qa8CK9GiJqMXdAMv',body: updatedUser.toUpdate());
 
       SharedPreferences prefs = await SharedPreferences.getInstance();
-      prefs.setInt("idPref",  widget.id);
-      prefs.setString("firstNamePref", u.firstName=="" ? widget.first : u.firstName);
-      prefs.setString("lastNamePref", u.lastName=="" ? widget.last : u.lastName);
-      prefs.setString("emailPref", u.email=="" ? widget.email : u.email);
+
+
+
+        /*prefs.setString("firstNamePref", u.firstName=="" ? widget.first : u.firstName);
+        prefs.setString("lastNamePref", u.lastName=="" ? widget.last : u.lastName);
+        prefs.setString("emailPref", u.email=="" ? widget.email : u.email);*/
+
+
+      print(prefs.get("firstNamePref"));
+
+
 
 
       print("238 ${updatedUser.toMap()}");

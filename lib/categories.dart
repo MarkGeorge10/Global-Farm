@@ -36,13 +36,10 @@ class _CategoriesState extends State<Categories> {
     SharedPreferences prefs = await SharedPreferences.getInstance();
     first = prefs.get("firstNamePref");
   }
-
   Future<void> getLastName() async{
     SharedPreferences prefs = await SharedPreferences.getInstance();
     last =prefs.get("lastNamePref");
   }
-
-
   Future<void> getEmail() async{
     SharedPreferences prefs = await SharedPreferences.getInstance();
     email = prefs.get("emailPref");
@@ -52,28 +49,6 @@ class _CategoriesState extends State<Categories> {
   var isLoading = true;
    List<dynamic> categoryItem;
 
-  void _showDialog(String str) {
-    // flutter defined function
-    showDialog(
-      context: context,
-      builder: (BuildContext context) {
-        // return object of type Dialog
-        return AlertDialog(
-          //title: new Text("Alert Dialog title"),
-          content: new Text(str),
-          actions: <Widget>[
-            // usually buttons at the bottom of the dialog
-            new FlatButton(
-              child: new Text("Ok"),
-              onPressed: () {
-                Navigator.of(context).pop();
-              },
-            ),
-          ],
-        );
-      },
-    );
-  }
 
    fetchData() async {
      setState(() {
@@ -92,26 +67,12 @@ class _CategoriesState extends State<Categories> {
   }
   
   logout() async {
-
     SharedPreferences prefs = await SharedPreferences.getInstance();
     prefs.clear();
     Navigator.pushAndRemoveUntil(
         context,
         MaterialPageRoute(builder: (context) => LoginPage()),
         ModalRoute.withName('/Categories'));
-
-
-//     final response = await http.get('http://global-farm.net/en/api/logout?token=hVF4CVDlbuUg18MmRZBA4pDkzuXZi9Rzm5wYvSPtxvF8qa8CK9GiJqMXdAMv');
-//      String body = response.body;
-//      print(body);
-//
-//      if(body == 'true'){
-//        Navigator.pushNamed(context, '/LoginPage');
-//
-//      }
-//      else{
-//        return _showDialog("There is a problem please try again");
-//      }
    }
 
   @override

@@ -1,39 +1,30 @@
 import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
-import '../Product.dart';
-import '../Product_detailed.dart';
-import '../main.dart';
 import 'dart:convert';
 import 'package:http/http.dart' as http;
-
-import 'Cart.dart';
-
 // ignore: must_be_immutable
+
+
 class ShoppingPage extends StatefulWidget {
-  List<Product> savedCart;
+
   Future<int> userId;
 
   double totalPrice;
 
-  ShoppingPage({this.userId, this.savedCart});
+  ShoppingPage({this.userId});
 
   @override
   _ShoppingPageState createState() => _ShoppingPageState();
 }
 
 class _ShoppingPageState extends State<ShoppingPage> {
-  var isLoading = true;
-  List<dynamic> categoryItem;
 
-  // ignore: missing_return
+  List<dynamic> cartItem;
+
 
   @override
   // ignore: must_call_super
-  void initState() {
-    fetchData();
-  }
-
   Future<List<dynamic>> fetchData() async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
     var datId = prefs.get("idPref");
@@ -42,12 +33,12 @@ class _ShoppingPageState extends State<ShoppingPage> {
             '$datId' +
             'token=hVF4CVDlbuUg18MmRZBA4pDkzuXZi9Rzm5wYvSPtxvF8qa8CK9GiJqMXdAMv')
         .then((http.Response response) {
-      categoryItem = json.decode(response.body);
-      print(categoryItem);
+      cartItem = json.decode(response.body);
+      print(cartItem);
 
 
     });
-    return categoryItem;
+    return cartItem;
   }
 
   deleteData(int userId, int productId) async {
@@ -71,6 +62,19 @@ class _ShoppingPageState extends State<ShoppingPage> {
           "Your Cart",
         ),
         backgroundColor: Colors.green,
+        actions: <Widget>[
+          // Add 3 lines from here...
+
+          // push data and Calculate total amount Shopping Page
+          IconButton(
+              icon: Icon(Icons.refresh),
+              onPressed: () {
+                Navigator.pushReplacement(
+                    context,
+                    MaterialPageRoute(builder: (_) => ShoppingPage()));
+              })
+        ],
+
       ),
       body: FutureBuilder(
           future: fetchData(),
@@ -270,7 +274,7 @@ class _ShoppingPageState extends State<ShoppingPage> {
             Expanded(
               child: FlatButton(
                 onPressed: () {
-                  if (categoryItem.length != 0) {
+                  if (cartItem.length != 0) {
                     Navigator.pushNamed(context, '/PaymentPage');
                   }
                 },
