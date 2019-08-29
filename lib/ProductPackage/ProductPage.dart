@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:plant_shop/ShoppingPackage/Cart.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'Model.dart';
 import 'Product.dart';
 import 'Product_detailed.dart';
 import '../ShoppingPackage/Cart.dart';
@@ -8,6 +9,7 @@ import '../ShoppingPackage/ShoppingPage.dart';
 import '../main.dart';
 import 'dart:convert';
 import 'package:http/http.dart' as http;
+import 'package:provider/provider.dart';
 
 // ignore: must_be_immutable
 class ProductPage extends StatefulWidget {
@@ -105,11 +107,14 @@ class _productListState extends State<ProductPage>
                   itemCount: snapshot.data.length,
 
                   itemBuilder: (context, int index) {
-                    return new Item(
-                        index: index,
-                        pair: snapshot.data[index],
-                        animationController: _animationController,
-                        duration: animationDuration);
+                    return ChangeNotifierProvider(
+                      builder: (_)=> Model(),
+                      child: new Item(
+                          index: index,
+                          pair: snapshot.data[index],
+                          animationController: _animationController,
+                          duration: animationDuration),
+                    );
                   });
             }
             // ignore: unrelated_type_equality_checks
@@ -144,6 +149,9 @@ class _ItemState extends State<Item> {
   double start;
   double end;
   int localQuantity = 1;
+
+
+
 
   Future<Cart> addCart(String url, {Map body}) async {
     print(body);
@@ -181,6 +189,7 @@ class _ItemState extends State<Item> {
 
   @override
   Widget build(BuildContext context) {
+
     return Opacity(
       opacity: _animation.value,
       child: Card(
@@ -243,7 +252,7 @@ class _ItemState extends State<Item> {
   }
 
   buildIcon(Product pair) {
-    //final model = Provider.of<Model>(context);
+    final model = Provider.of<Model>(context);
     return Column(
       children: <Widget>[
 
@@ -262,12 +271,7 @@ class _ItemState extends State<Item> {
                   icon: Icon(Icons.remove_circle_outline),
                   alignment: Alignment.centerLeft,
                   onPressed: () {
-                    setState(() {
-                      localQuantity--;
-                      if (localQuantity < 1) {
-                        localQuantity = 1;
-                      }
-                    });
+                    model.decrementCounter();
 
 
                   }),
@@ -275,7 +279,7 @@ class _ItemState extends State<Item> {
             Container(
               margin:EdgeInsets.only(top: MediaQuery.of(context).size.height/30.0) ,
               child: Text(
-                "$localQuantity",
+                "${model.getQuantity()}",
               ),
             ),
             Container(
@@ -284,9 +288,7 @@ class _ItemState extends State<Item> {
                   alignment: Alignment.centerRight,
                   icon: Icon(Icons.add_circle_outline),
                   onPressed: () {
-                    setState(() {
-                      localQuantity++;
-                    });
+                    model.incrementCounter();
 
                   }),
             ),
@@ -313,7 +315,7 @@ class _ItemState extends State<Item> {
                 Cart newCart = new Cart(
                   userId: datId,
                   productId: pair.productId,
-                  quantity: localQuantity,
+                  quantity: model.getQuantity(),
                 );
 
                 Cart cart = await addCart('http://global-farm.net/en/api/cart/items?token=hVF4CVDlbuUg18MmRZBA4pDkzuXZi9Rzm5wYvSPtxvF8qa8CK9GiJqMXdAMv',body: newCart.toAdd());

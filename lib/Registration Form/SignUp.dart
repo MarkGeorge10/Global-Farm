@@ -1,5 +1,7 @@
+import 'dart:async';
 import 'dart:convert';
 
+import 'package:connectivity/connectivity.dart';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'package:plant_shop/Registration%20Form/user.dart';
@@ -34,7 +36,13 @@ class _SignUpState extends State<SignUp> {
             new FlatButton(
               child: new Text("Ok"),
               onPressed: () {
-                Navigator.of(context).pop();
+                if(str == "Added Successfully"){
+                  Navigator.pushNamed(context, '/LoginPage');
+                }
+                else{
+                  Navigator.of(context).pop();
+                }
+
               },
             ),
           ],
@@ -53,7 +61,7 @@ class _SignUpState extends State<SignUp> {
       print(responseBody);
 
       if (responseBody == 'true') {
-        Navigator.pushNamed(context, '/LoginPage');
+        _showDialog("Added Successfully");
         return null;//User.fromJson(json.decode(response.body));
       }
       else{
@@ -63,8 +71,56 @@ class _SignUpState extends State<SignUp> {
 
     });
   }
+  final Connectivity _connectivity = new Connectivity();
+  StreamSubscription<ConnectivityResult> _connectionSubscription;
+  String _connectionStatus;
 
+  @override
+  void initState() {
+    super.initState();
+    // initConnectivity(); before calling on button press
+    _connectionSubscription =
+        _connectivity.onConnectivityChanged.listen((ConnectivityResult result) {
+          setState(() {
+            _connectionStatus = result.toString();
+          });
+        });
+    print("Initstate : $_connectionStatus");
+  }
 
+  //For cancelling the stream subscription...Good way to release resources
+  @override
+  void dispose() {
+    _connectionSubscription.cancel();
+    super.dispose();
+  }
+
+  Future<Null> initConnectivity() async {
+    String connectionStatus;
+
+    try {
+      connectionStatus = (await _connectivity.checkConnectivity()).toString();
+    }catch(PlatformException){
+      print(PlatformException.toString());
+      connectionStatus = "Internet connectivity failed";
+    }
+
+    if (!mounted) {
+      return;
+    }
+
+    setState(() {
+      _connectionStatus = connectionStatus;
+    });
+    print("InitConnectivity : $_connectionStatus");
+    if(_connectionStatus == "ConnectivityResult.wifi") {
+      validateForm();
+      print("gggggggggggggg");
+    } else {
+      _showDialog("You are not connected to internet");
+
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -303,7 +359,7 @@ class _SignUpState extends State<SignUp> {
                         ),
                         child: FlatButton(
                           onPressed: () async {
-                            validateForm();
+                            initConnectivity();
                           },
                           child: Center(
                             child: Text(

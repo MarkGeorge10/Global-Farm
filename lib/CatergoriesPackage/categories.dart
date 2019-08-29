@@ -2,8 +2,9 @@ import 'dart:convert';
 
 import 'package:http/http.dart' as http;
 import 'package:flutter/material.dart';
+import 'package:plant_shop/ProductPackage/Model.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-
+import 'package:provider/provider.dart';
 import 'package:plant_shop/Registration Form/MyAccount.dart';
 import 'package:plant_shop/ProductPackage/ProductPage.dart';
 import '../Registration Form/LoginPage.dart';
@@ -103,6 +104,8 @@ class _CategoriesState extends State<Categories> {
               itemBuilder: (context, i) {
                 return InkWell(
                   onTap: () {
+
+
                     Navigator.push(
                         context,
                         new MaterialPageRoute(
